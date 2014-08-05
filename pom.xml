@@ -13,6 +13,20 @@
 		<artifactId>freemarker</artifactId>
 		<version>2.3.20</version>
 	</dependency>
+
+	<!-- Funtester Common -->
+	<dependency>
+		<groupId>org.funtester</groupId>
+		<artifactId>funtester-common</artifactId>
+		<version>0.7c</version>
+	</dependency>
+
+	<!-- Funtester Plugin Common -->
+	<dependency>
+		<groupId>org.funtester</groupId>
+		<artifactId>funtester-plugin-common</artifactId>
+		<version>0.7c</version>
+	</dependency>
   
   </dependencies>
   
