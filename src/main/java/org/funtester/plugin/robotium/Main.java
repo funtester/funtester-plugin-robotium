@@ -21,7 +21,7 @@ public class Main {
 	
 	//TODO: LER DO ARQUIVO DE CONFIGURAÇÃO DEPOIS:
 	private static final String OUTPUT_DIRECTORY = "C:/Program Files/funtester-0.7c.1/examples/output";
-	private static final String MAIN_CLASS = ""; //Acho que não preciso saber a classe main
+	private static final String MAIN_CLASS = "MainActivity";
 	private static final String PACKAGE_NAME = "com.appname.tests";
 	private static final int TIME_OUT_IN_MS = 5000;
 
