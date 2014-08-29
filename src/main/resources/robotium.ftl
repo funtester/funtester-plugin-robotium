@@ -27,7 +27,7 @@ public class ${test.name} extends ActivityInstrumentationTestCase2< MainActivity
 	
 	//Test methods:
 	<#list test.methods as method>
-	public void test${method.name}() {
+	public void test_${method.name}() {
 		<#list method.commands as cmd>
 		${cmd};
 		</#list>

@@ -17,7 +17,7 @@ import org.funtester.plugin.robotium.model.at.JsonAbstractTestSuiteRepository;
  */
 public class Main {
 
-	private static final String FAT_FILE_DIRECTORY = "C:/Program Files/funtester-0.7c.1/examples/target_app.fat";
+	private static final String FAT_FILE_DIRECTORY = "C:/Program Files/funtester-0.7c.1/examples/funtester.fat";
 	
 	//TODO: LER DO ARQUIVO DE CONFIGURAÇÃO DEPOIS:
 	private static final String OUTPUT_DIRECTORY = "C:/Program Files/funtester-0.7c.1/examples/output";
@@ -28,7 +28,7 @@ public class Main {
 	public static void main( String[] args ) {
 		
 		//STEP 1:
-		System.out.println("> Step 1: Reading the abstratc tests from: " + FAT_FILE_DIRECTORY + "...");
+		//System.out.println("> Step 1: Reading the abstratc tests from: " + FAT_FILE_DIRECTORY + "...");
 
 		AbstractTestSuiteRepository abstractTestSuiteRepository = new JsonAbstractTestSuiteRepository(
 				FAT_FILE_DIRECTORY);
@@ -41,10 +41,10 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		System.out.println( "> Step 1 done!\n" );
+		//System.out.println( "> Step 1 done!\n" );
 		
 		//STEP 2:
-		System.out.println( "> Step 2: Transforming the abstract tests into Robotium test code..." );
+		//System.out.println( "> Step 2: Transforming the abstract tests into Robotium test code..." );
 		
 		Transformer transformer = new Transformer();
 		List< String > fileNames = new ArrayList< String >();
@@ -60,7 +60,7 @@ public class Main {
 		}
 		transformer = null;
 		
-		System.out.println("> Step 2 done!");
+		//System.out.println("> Step 2 done!");
 		
 	}
 

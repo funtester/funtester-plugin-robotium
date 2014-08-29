@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.funtester.common.at.AbstractTestActionStep;
 import org.funtester.common.at.AbstractTestCase;
+import org.funtester.common.at.AbstractTestElement;
 import org.funtester.common.at.AbstractTestMethod;
+import org.funtester.common.at.AbstractTestOracleStep;
 import org.funtester.common.at.AbstractTestStep;
 import org.funtester.common.at.AbstractTestSuite;
 import org.funtester.plugin.code.TestCase;
@@ -57,8 +60,18 @@ public class RobotiumCodeGenerator {
 			TestMethod testMethod = new TestMethod();
 			
 			testMethod.withName( abstractTestMethod.getName() );
-			for( AbstractTestStep abstractTestStep : abstractTestMethod.getSteps() ){
-				testMethod.addCommand( abstractTestStep.getActionName() );
+			
+			for( AbstractTestStep abstractTestStep : abstractTestMethod.getSteps() ){	
+				if( abstractTestStep instanceof AbstractTestActionStep ){
+					AbstractTestActionStep actionStep = ( AbstractTestActionStep ) abstractTestStep;
+					for( AbstractTestElement abstractElement : actionStep.getElements() ){
+						testMethod.addCommand( Translator.translateActionStep( actionStep, abstractElement ) );	
+					}
+				}else{
+					AbstractTestOracleStep oracleStep = ( AbstractTestOracleStep ) abstractTestStep;
+					testMethod.addCommand( oracleStep.getActionName() );
+				}
+					
 			}
 			
 			testCase.addMethod( testMethod );
