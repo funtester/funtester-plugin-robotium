@@ -18,6 +18,9 @@ public class ${test.name} extends ActivityInstrumentationTestCase2< MainActivity
 	@Override
 	protected void setUp() throws Exception {
 		solo = new Solo( getInstrumentation(), getActivity() );
+		<#list test.setUpOnceCommands as cmd>
+		${cmd}
+		</#list>
 	}
 
 	@Override

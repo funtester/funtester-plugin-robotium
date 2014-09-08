@@ -33,12 +33,12 @@ import freemarker.template.Version;
 public class RobotiumCodeGenerator {
 
 	public void generate( AbstractTestSuite suite, String mainClass, String sourcePackage, int timeOutToBeVisible ){
+		Translator translator = new Translator( sourcePackage );
 		List< AbstractTestCase > testCases = suite.getTestCases();
-		//transforma em código de robotium aqui
 		
 		for( AbstractTestCase abstractTestCase : testCases ){
 			try {
-				writeTest( createTestCase( abstractTestCase ) );
+				writeTest( createTestCase( abstractTestCase, translator, timeOutToBeVisible ) );
 			} catch ( IOException e ) {
 				e.printStackTrace();
 			}
@@ -50,10 +50,11 @@ public class RobotiumCodeGenerator {
 	 * Creates a {@link TestCase} based on a {@link AbstractTestCase}.
 	 * @param abstractTestCase
 	 */
-	private TestCase createTestCase( AbstractTestCase abstractTestCase ){
+	private TestCase createTestCase( AbstractTestCase abstractTestCase, Translator translator, int timeout ){
 		TestCase testCase = new TestCase();
 		
 		testCase.withName( abstractTestCase.getName() );
+		testCase.addSetUpOnceCommand( "Timeout.setLargeTimeout( " + timeout + " );" );
 		
 		//Adding the test methods:
 		for( AbstractTestMethod abstractTestMethod : abstractTestCase.getTestMethods() ){
@@ -65,11 +66,11 @@ public class RobotiumCodeGenerator {
 				if( abstractTestStep instanceof AbstractTestActionStep ){
 					AbstractTestActionStep actionStep = ( AbstractTestActionStep ) abstractTestStep;
 					for( AbstractTestElement abstractElement : actionStep.getElements() ){
-						testMethod.addCommand( Translator.translateActionStep( actionStep, abstractElement ) );	
+						testMethod.addCommand( translator.translateActionStep( actionStep, abstractElement ) );	
 					}
 				}else{
 					AbstractTestOracleStep oracleStep = ( AbstractTestOracleStep ) abstractTestStep;
-					testMethod.addCommand( oracleStep.getActionName() );
+					testMethod.addCommand( translator.translateOracleStep( oracleStep ) );
 				}
 					
 			}
