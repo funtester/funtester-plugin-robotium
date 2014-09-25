@@ -1,13 +1,17 @@
 package org.funtester.plugin.robotium;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.funtester.common.at.AbstractTestSuite;
+import org.funtester.common.generation.TestGenerationConfiguration;
+import org.funtester.common.generation.TestGenerationConfigurationRepository;
 import org.funtester.plugin.robotium.model.TransformException;
 import org.funtester.plugin.robotium.model.Transformer;
 import org.funtester.plugin.robotium.model.at.AbstractTestSuiteRepository;
 import org.funtester.plugin.robotium.model.at.JsonAbstractTestSuiteRepository;
+import org.funtester.plugin.robotium.model.configuration.JsonTestGenerationConfigurationRepository;
 
 /**
  * Launches the Robotium plugin for Funtester.
@@ -18,17 +22,38 @@ import org.funtester.plugin.robotium.model.at.JsonAbstractTestSuiteRepository;
 public class Main {
 
 	private static final String FAT_FILE_DIRECTORY = "C:/Program Files/funtester-0.7c.1/examples/funtester.fat";
-	
-	//TODO: LER DO ARQUIVO DE CONFIGURAÇÃO DEPOIS:
-	private static final String OUTPUT_DIRECTORY = "C:/Program Files/funtester-0.7c.1/examples/output";
-	private static final String MAIN_CLASS = "MainActivity";
-	private static final String PACKAGE_NAME = "com.appname.tests";
-	private static final int TIME_OUT_IN_MS = 5000;
+	private static final String PCFG_FILE_DIRECTORY = "C:/Program Files/funtester-0.7c.1/examples/funtester.pcfg";
 
-	public static void main( String[] args ) {
+	public static void main( String[] args ) throws Exception {
+		
+		//STEP 0:
+		//System.out.println("> Step 0: Reading the configurations from: " + FAT_FILE_DIRECTORY + "...");
+		File configurationFile = new File( PCFG_FILE_DIRECTORY );
+		if ( ! configurationFile.exists() ) {
+			//TODO: Ver qual é a melhor maneira de informar isso ao usuário depois...
+			throw new Exception( "O arquivo de configuração não foi encontrado no diretório informado." );
+		}
+		
+		TestGenerationConfigurationRepository configurationRepository =
+				createConfigurationRepository( PCFG_FILE_DIRECTORY );
+			
+		TestGenerationConfiguration cfg = null;
+		try {
+			cfg = configurationRepository.first();
+		} catch ( Exception e1 ) {			
+			e1.printStackTrace();
+		}
+		
+		//Getting the configurations from the configurations repository
+		final String OUTPUT_DIRECTORY = cfg.getOutputDirectory();
+		final String MAIN_CLASS = cfg.getMainClass();
+		final String PACKAGE_NAME = cfg.getPackageName();
+		final int TIME_OUT_IN_MS = cfg.getTimeoutInMS();
+			
+		//System.out.println("> Step 0 done!");
 		
 		//STEP 1:
-		//System.out.println("> Step 1: Reading the abstratc tests from: " + FAT_FILE_DIRECTORY + "...");
+		//System.out.println("> Step 1: Reading the abstract tests from: " + FAT_FILE_DIRECTORY + "...");
 
 		AbstractTestSuiteRepository abstractTestSuiteRepository = new JsonAbstractTestSuiteRepository(
 				FAT_FILE_DIRECTORY);
@@ -62,6 +87,11 @@ public class Main {
 		
 		//System.out.println("> Step 2 done!");
 		
+	}
+	
+	private static TestGenerationConfigurationRepository createConfigurationRepository(
+			final String fileName) {
+		return new JsonTestGenerationConfigurationRepository( fileName );
 	}
 
 }

@@ -11,11 +11,7 @@ import org.funtester.common.at.AbstractTestOracleStep;
 public class Translator {
 
 	private static final String PREFIX = "solo.";
-	
-	/*TODO: vou precisar disso mesmo?
-	private static final String RESOURCE_ID = "R.id.";
-	private String packageName;
-	*/
+	private static final String SEMICOLON = ";";
 	
 	public Translator( String packageName ) {
 		//this.packageName = packageName;
@@ -24,24 +20,26 @@ public class Translator {
 	public  String translateActionStep( AbstractTestActionStep step, AbstractTestElement element ){
 		String actionName = step.getActionName();
 		String elementType = element.getType();
+		step.getId();//Id do passo de teste;
+		step.getStepId();//Id do passo do caso de uso.
 		
 		//click
 		if( actionName.equals( "click" ) ){
 			//click + button
 			if( elementType.equals( "button" ) ){
-				return PREFIX + "clickOnButton" + insideParenthesis( insideQuotes( element.getName() ) );	
+				return PREFIX + "clickOnButton" + insideParenthesis( insideQuotes( element.getName() ) ) + SEMICOLON;	
 			}
 			//click + menu
 			if( elementType.equals( "menu" ) ){
-				return PREFIX + "clickOnMenuItem" + insideParenthesis( insideQuotes( element.getName() ) );
+				return PREFIX + "clickOnMenuItem" + insideParenthesis( insideQuotes( element.getName() ) ) + SEMICOLON;
 			}
 			//click + checkbox
 			if( elementType.equals( "checkbox" ) ){
-				return PREFIX + "clickOnCheckBox" + insideParenthesis( internalNameToId( element.getInternalName() ) );
+				return PREFIX + "clickOnCheckBox" + insideParenthesis( internalNameToId( element.getInternalName() ) ) + SEMICOLON;
 			}
 			//click + radio || click + radiobutton
 			if( elementType.equals( "radio" ) || elementType.equals( "radiobutton" ) ){
-				return PREFIX + "clickOnRadioButton" + insideParenthesis( internalNameToId( element.getInternalName() ) );
+				return PREFIX + "clickOnRadioButton" + insideParenthesis( internalNameToId( element.getInternalName() ) ) + SEMICOLON;
 			}
 		}
 		
@@ -53,7 +51,7 @@ public class Translator {
 				if( element.getValue() != null ){
 					valueToType = insideQuotes( element.getValue().toString() );
 				}
-				return PREFIX + "enterText" + insideParenthesis( PREFIX + "getEditText" + insideParenthesis( insideQuotes( element.getName() ) ) + ", " + valueToType );
+				return PREFIX + "enterText" + insideParenthesis( PREFIX + "getEditText" + insideParenthesis( insideQuotes( element.getName() ) ) + ", " + valueToType ) + SEMICOLON;
 			}
 		}
 		
@@ -61,15 +59,15 @@ public class Translator {
 		if( actionName.equals( "select" ) ){
 			//select + combobox || select + spinner
 			if( elementType.equals( "combobox" ) || elementType.equals( "spinner" ) ){
-				return PREFIX + "pressSpinnerItem" + insideParenthesis( internalNameToId( element.getInternalName() ) + ", " + element.getValue() );
+				return PREFIX + "pressSpinnerItem" + insideParenthesis( internalNameToId( element.getInternalName() ) + ", " + element.getValue() ) + SEMICOLON;
 			}
 			//select + checkbox
 			if( elementType.equals( "checkbox" ) ){
-				return PREFIX + "clickOnCheckBox" + insideParenthesis( internalNameToId( element.getInternalName() ) );
+				return PREFIX + "clickOnCheckBox" + insideParenthesis( internalNameToId( element.getInternalName() ) ) + SEMICOLON;
 			}
 			//select + radio || select + radio button
 			if( elementType.equals( "radio" ) || elementType.equals( "radiobutton" ) ){
-				return PREFIX + "clickOnRadioButton" + insideParenthesis( internalNameToId( element.getInternalName() ) );
+				return PREFIX + "clickOnRadioButton" + insideParenthesis( internalNameToId( element.getInternalName() ) ) + SEMICOLON;
 			}
 		}
 		
@@ -77,7 +75,7 @@ public class Translator {
 		if( actionName.equals( "choose" ) ){
 			//choose + checkbox
 			if( elementType.equals( "checkbox" ) ){
-				return PREFIX + "clickOnCheckBox" + insideParenthesis( internalNameToId( element.getInternalName() ) );
+				return PREFIX + "clickOnCheckBox" + insideParenthesis( internalNameToId( element.getInternalName() ) ) + SEMICOLON;
 			}
 		}
 		
@@ -85,15 +83,20 @@ public class Translator {
 		if( actionName.equals( "show" ) ){
 			//show + frame
 			if( elementType.equals( "frame" ) ){
-				return PREFIX + "assertCurrentActivity( " + insideQuotes( "A tela " + element.getName() + " não foi exibida." ) + ", " + insideQuotes( element.getName() ) + " )";
+				return PREFIX + "assertCurrentActivity( " + insideQuotes( "A tela " + element.getName() + " não foi exibida." ) + ", " + insideQuotes( element.getName() ) + " )" + SEMICOLON;
 			}
 			//show + dialog
 			if( elementType.equals( "dialog" ) ){
-				return assertTrue( PREFIX + "waitForView" + insideParenthesis( internalNameToId( element.getInternalName() ) ) );
+				return assertTrue( PREFIX + "waitForView" + insideParenthesis( internalNameToId( element.getInternalName() ) ) ) + SEMICOLON;
 			}
 		}
 		
-		return actionName + " " + elementType + " " + element.getName() + " " + element.getValue();
+		//close
+		if( actionName.equals( "close" ) ){
+			return "//The \"close\" action will be performed automatically by tearDown() method.";
+		}
+		
+		return actionName + " " + elementType + " " + element.getName() + " " + element.getValue() + SEMICOLON;
 	}
 	
 	public String translateOracleStep( AbstractTestOracleStep step ){
@@ -101,10 +104,10 @@ public class Translator {
 		
 		//check
 		if( actionName.equals( "check" ) ){
-			return PREFIX + "waitForText" + insideParenthesis( insideQuotes( step.getMessages().get( 0 ) ) );
+			return PREFIX + "waitForText" + insideParenthesis( insideQuotes( step.getMessages().get( 0 ) ) ) + SEMICOLON;
 		}
 		
-		return step.getActionName();
+		return step.getActionName() + SEMICOLON;
 	}
 
 	private static String insideParenthesis( String value ){
