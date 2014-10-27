@@ -21,8 +21,8 @@ import org.funtester.plugin.robotium.model.configuration.JsonTestGenerationConfi
  */
 public class Main {
 
-	private static final String FAT_FILE_DIRECTORY = "C:/Program Files/funtester-0.7c.1/examples/funtester.fat";
-	private static final String PCFG_FILE_DIRECTORY = "C:/Program Files/funtester-0.7c.1/examples/funtester.pcfg";
+	private static final String FAT_FILE_DIRECTORY = "C:/Program Files/funtester-0.7c.1/userapp/userapp.fat";
+	private static final String PCFG_FILE_DIRECTORY = "C:/Program Files/funtester-0.7c.1/userapp/userapp.pcfg";
 
 	public static void main( String[] args ) throws Exception {
 		

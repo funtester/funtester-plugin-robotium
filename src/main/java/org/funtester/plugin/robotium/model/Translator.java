@@ -50,8 +50,10 @@ public class Translator {
 				String valueToType = "";
 				if( element.getValue() != null ){
 					valueToType = insideQuotes( element.getValue().toString() );
+				}else{
+					valueToType = "null";
 				}
-				return PREFIX + "enterText" + insideParenthesis( PREFIX + "getEditText" + insideParenthesis( insideQuotes( element.getName() ) ) + ", " + valueToType ) + SEMICOLON;
+				return PREFIX + "enterText" + insideParenthesis( "( EditText ) solo.getView( R.id." + element.getInternalName() + " )" + ", " + valueToType ) + SEMICOLON;
 			}
 		}
 		
@@ -89,6 +91,11 @@ public class Translator {
 			if( elementType.equals( "dialog" ) ){
 				return assertTrue( PREFIX + "waitForView" + insideParenthesis( internalNameToId( element.getInternalName() ) ) ) + SEMICOLON;
 			}
+			
+			//show + message
+			if( elementType.equals( "message" ) ){
+				return assertTrue( PREFIX + "waitForText" + insideParenthesis( PREFIX + "getString" + insideParenthesis( "R.string." + element.getInternalName() ) ) ) + SEMICOLON;
+			}
 		}
 		
 		//close
@@ -104,7 +111,7 @@ public class Translator {
 		
 		//check
 		if( actionName.equals( "check" ) ){
-			return PREFIX + "waitForText" + insideParenthesis( insideQuotes( step.getMessages().get( 0 ) ) ) + SEMICOLON;
+			return assertTrue( PREFIX + "waitForText" + insideParenthesis( insideQuotes( step.getMessages().get( 0 ) ) ) ) + SEMICOLON;
 		}
 		
 		return step.getActionName() + SEMICOLON;

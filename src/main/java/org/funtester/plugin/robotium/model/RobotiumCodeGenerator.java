@@ -68,17 +68,36 @@ public class RobotiumCodeGenerator {
 	 * @param abstractTestCase
 	 */
 	private TestCase createTestCase( AbstractTestCase abstractTestCase, Translator translator, int timeout, String mainClass, String packageName ){
+		/*
+		 * mainClass = com.example.app.Main
+		 * mainClassPackage = com.example.app
+		 * mainClassWithoutPackage = Main
+		 */
+		String mainClassPackage = mainClass.substring( 0, mainClass.lastIndexOf( "." ) );
+		String mainClassWithoutPackage = mainClass.substring( mainClass.lastIndexOf( "." ) + 1 );
+		
 		TestCase testCase = new TestCase();
 		
+		testCase.addHeaderComment( "Code generated automatically by Robotium plugin for Funtester." );
+		testCase.addHeaderComment( "More info at http://funtester.org/" );
+		
 		testCase.withNamespace( packageName );
-		testCase.withName( abstractTestCase.getName() + " extends ActivityInstrumentationTestCase2< " + mainClass + " >" );
+
+		testCase.addImport( "android.test.ActivityInstrumentationTestCase2" );
+		testCase.addImport( "android.widget.*" );
+		testCase.addImport( "com.robotium.solo.Solo" );
+		testCase.addImport( "com.robotium.solo.Timeout" );
+		testCase.addImport( mainClass );
+		testCase.addImport( mainClassPackage + ".R" );
+		
+		testCase.withName( abstractTestCase.getName() + " extends ActivityInstrumentationTestCase2< " + mainClassWithoutPackage + " >" );
 		testCase.addAttribute( new Variable( "Solo", "solo" ) );
 		
 		//Constructor:
 		HelperMethod constructor = new HelperMethod();
 		constructor.withName( abstractTestCase.getName() );
 		constructor.withReturnType( "" );
-		constructor.addCommand( "super( " + mainClass + ".class );" );
+		constructor.addCommand( "super( " + mainClassWithoutPackage + ".class );" );
 		testCase.addHelperMethod( constructor );
 		
 		//Setup commands:
@@ -92,7 +111,7 @@ public class RobotiumCodeGenerator {
 		for( AbstractTestMethod abstractTestMethod : abstractTestCase.getTestMethods() ){
 			TestMethod testMethod = new TestMethod();
 			
-			testMethod.withName( abstractTestMethod.getName() );
+			testMethod.withName( "test_" + abstractTestMethod.getName() );
 			
 			for( AbstractTestStep abstractTestStep : abstractTestMethod.getSteps() ){	
 				if( abstractTestStep instanceof AbstractTestActionStep ){
