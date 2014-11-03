@@ -1,9 +1,9 @@
 package org.funtester.plugin.robotium.model;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -35,14 +35,15 @@ import freemarker.template.Version;
  */
 public class RobotiumCodeGenerator {
 
-	public void generate( AbstractTestSuite suite, String mainClass, String sourcePackage, int timeOutToBeVisible ){
+	public void generate( AbstractTestSuite suite, String mainClass, String sourcePackage, int timeOutToBeVisible, String outputDirectory ){
+
 		Translator translator = new Translator( sourcePackage );
 		TestAnnotation annotation = createAnnotation();
 		List< AbstractTestCase > testCases = suite.getTestCases();
 		
 		for( AbstractTestCase abstractTestCase : testCases ){
 			try {
-				writeTest( createTestCase( abstractTestCase, translator, timeOutToBeVisible, mainClass, sourcePackage ), annotation );
+				writeTest( createTestCase( abstractTestCase, translator, timeOutToBeVisible, mainClass, sourcePackage ), annotation, outputDirectory );
 			} catch ( IOException e ) {
 				e.printStackTrace();
 			}
@@ -113,11 +114,11 @@ public class RobotiumCodeGenerator {
 			
 			testMethod.withName( "test_" + abstractTestMethod.getName() );
 			
-			for( AbstractTestStep abstractTestStep : abstractTestMethod.getSteps() ){	
+			for( AbstractTestStep abstractTestStep : abstractTestMethod.getSteps() ){
 				if( abstractTestStep instanceof AbstractTestActionStep ){
 					AbstractTestActionStep actionStep = ( AbstractTestActionStep ) abstractTestStep;
 					for( AbstractTestElement abstractElement : actionStep.getElements() ){
-						testMethod.addCommand( translator.translateActionStep( actionStep, abstractElement ) );	
+						testMethod.addCommand( translator.translateActionStep( actionStep, abstractElement ) + "//id=" + abstractTestStep.getId() + "|" + abstractTestStep.getStepId() );
 					}
 				}else{
 					AbstractTestOracleStep oracleStep = ( AbstractTestOracleStep ) abstractTestStep;
@@ -136,10 +137,10 @@ public class RobotiumCodeGenerator {
 	 * @param testCase {@link TestCase} to be written.
 	 * @throws IOException if a problem occurs to write .
 	 */
-	private void writeTest( TestCase testCase, TestAnnotation annotation ) throws IOException{	
+	private void writeTest( TestCase testCase, TestAnnotation annotation, String outputDirectory ) throws IOException{	
 		//Configuration...
-		Configuration cfg = new Configuration();	
-		cfg.setDirectoryForTemplateLoading( new File( "src/main/resources" ) );
+		Configuration cfg = new Configuration();
+		cfg.setClassForTemplateLoading( getClass(), "/template" );
 		cfg.setIncompatibleImprovements( new Version( 2, 3, 20 ) );
 		cfg.setDefaultEncoding( "UTF-8" );
 		cfg.setLocale( Locale.US );
@@ -152,8 +153,11 @@ public class RobotiumCodeGenerator {
 		Template template;
 		try {
 			template = cfg.getTemplate( "java.ftl" );
-			Writer consoleWriter = new OutputStreamWriter( System.out );
-			template.process( input, consoleWriter );
+			String testCaseFileName = testCase.getName().split( " " )[0] + ".java";
+			File outputFile = new File( outputDirectory + "/" + testCaseFileName );
+			FileWriter fileWriter = new FileWriter( outputFile );
+			BufferedWriter bufferedWriter = new BufferedWriter( fileWriter );
+			template.process( input, bufferedWriter );
 		}catch( IOException ex ){
 			ex.printStackTrace();
 		} catch (TemplateException e) {

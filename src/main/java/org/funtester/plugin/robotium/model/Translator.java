@@ -47,12 +47,12 @@ public class Translator {
 		if( actionName.equals( "type" ) ){
 			//type + textbox
 			if( elementType.equals( "textbox" ) ){
-				String valueToType = "";
+				String valueToType = insideQuotes( "" );
 				if( element.getValue() != null ){
 					valueToType = insideQuotes( element.getValue().toString() );
-				}else{
+				}/*else{
 					valueToType = "null";
-				}
+				}*/
 				return PREFIX + "enterText" + insideParenthesis( "( EditText ) solo.getView( R.id." + element.getInternalName() + " )" + ", " + valueToType ) + SEMICOLON;
 			}
 		}

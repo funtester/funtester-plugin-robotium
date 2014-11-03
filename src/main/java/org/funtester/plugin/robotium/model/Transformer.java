@@ -103,7 +103,7 @@ public class Transformer {
 		}*/		
 		
 		RobotiumCodeGenerator codeGenerator = new RobotiumCodeGenerator();
-		codeGenerator.generate( suite, mainClass, packageName, timeoutToBeVisibleInMS );
+		codeGenerator.generate( suite, mainClass, packageName, timeoutToBeVisibleInMS, outputDirectory );
 		
 		return fileNames;
 	}	
